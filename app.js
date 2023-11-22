@@ -1,13 +1,15 @@
 // app.js
-const express = require('express')
-const cors = require('cors')
-const blogsRouter = require('./controllers/blogs') // This assumes you've moved your blog routes to a separate module
+const express = require('express');
+const app = express();
+const { requestLogger, unknownEndpoint, errorHandler } = require('./utils/middleware');
+const blogRouter = require('./controllers/blogs');
 
-const app = express()
+app.use(express.json());
+app.use(requestLogger);
 
-app.use(cors())
-app.use(express.json())
+app.use('/api/blogs', blogRouter);
 
-app.use('/api/blogs', blogsRouter) // This is using the router from your blogs controller
+app.use(unknownEndpoint);
+app.use(errorHandler);
 
-module.exports = app
+module.exports = app;
