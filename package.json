@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "NODE_ENV=production node index.js",
+    "dev": "NODE_ENV=development nodemon index.js",
     "build:ui": "rm -rf dist && cd ../bloglist-frontend && npm run build && cp -r dist/* ../bloglistV2/",
     "deploy:full": "npm run build:ui && git add . && git commit -m 'Deploying updated build' && git push",
     "lint": "eslint .",
