@@ -45,4 +45,11 @@ blogSchema.set("toJSON", {
   },
 })
 
+// After defining your schema, you can add a pre-save hook to log the blog being saved
+blogSchema.pre('save', function(next) {
+  console.log('Saving blog:', this);
+  next();
+});
+
+
 module.exports = mongoose.model("Blog", blogSchema)
