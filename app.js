@@ -15,9 +15,13 @@ logger.info('connecting to', config.MONGODB_URI)
 
 const { requestLogger, unknownEndpoint, errorHandler } = require("./utils/middleware")
 
+// The catch-all handler for any request that doesn't match one above
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname+'/public/index.html'));
+});
 
 app.use(cors())
-app.use(express.static('build'))
+app.use(express.static('dist'))
 app.use(express.json())
 app.use(requestLogger)
 
