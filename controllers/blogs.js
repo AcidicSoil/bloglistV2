@@ -17,6 +17,19 @@ blogsRouter.get('/:id', async (request, response) => {
   }
 })
 
+// DELETE endpoint to remove a blog post
+blogsRouter.delete('/:id', async (request, response) => {
+  await Blog.findByIdAndDelete(request.params.id);
+  response.status(204).end(); // 204 No Content
+});
+
+// PUT endpoint to update a blog post
+blogsRouter.put('/:id', async (request, response) => {
+  const body = request.body;
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, body, { new: true });
+  response.json(updatedBlog);
+});
+
 blogsRouter.post("/", async (request, response) => {
   const blog = new Blog(request.body)
   const result = await blog.save()
