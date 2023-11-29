@@ -1,10 +1,7 @@
-// index.js
-const { PORT } = require("./utils/config")
-const app = require("./app") // Assuming you've moved express setup to app.js
-const connectToDatabase = require("./utils/database") // Assuming you've created this function
+const app = require('./app')
+const config = require('./utils/config')
+const logger = require('./utils/logger')
 
-connectToDatabase() // Establish database connection
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+app.listen(config.PORT, () => {
+  logger.info(`Server running on port ${config.PORT}`)
 })
