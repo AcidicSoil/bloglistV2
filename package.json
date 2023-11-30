@@ -7,7 +7,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "build:ui": "rm -rf dist && cd ../bloglist-frontend && npm run build && cp -r dist ../bloglistV2/",
-    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
+    "deploy:full": "npm run build:ui && git add . && git commit -m 'uibuild' && git push",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "jest --verbose"
