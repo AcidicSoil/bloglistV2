@@ -1,39 +1,59 @@
-// controllers/blogs.js
 const blogsRouter = require("express").Router()
-const Blog = require("../models/blog")
+const Blog = require("../models/blog") // Adjust the path as per your project structure
 
-blogsRouter.get("/", async (request, response) => {
-  const blogs = await Blog.find({})
-  response.json(blogs)
+blogsRouter.get("/", (request, response) => {
+  Blog.find({}).then(blogs => {
+    response.json(blogs)
+  })
 })
 
-
-blogsRouter.get('/:id', async (request, response) => {
-  const blog = await Blog.findById(request.params.id)
-  if (blog) {
-    response.json(blog)
-  } else {
-    response.status(404).end()
-  }
+blogsRouter.get("/:id", (request, response, next) => {
+  Blog.findById(request.params.id)
+    .then(blog => {
+      if (blog) {
+        response.json(blog)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
-// DELETE endpoint to remove a blog post
-blogsRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndDelete(request.params.id);
-  response.status(204).end(); // 204 No Content
-});
+blogsRouter.post("/", (request, response, next) => {
+  const body = request.body
 
-// PUT endpoint to update a blog post
-blogsRouter.put('/:id', async (request, response) => {
-  const body = request.body;
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, body, { new: true });
-  response.json(updatedBlog);
-});
+  const blog = new Blog({
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes || 0, // Default to 0 if not provided
+  })
 
-blogsRouter.post("/", async (request, response) => {
-  const blog = new Blog(request.body)
-  const result = await blog.save()
-  response.status(201).json(result)
+  blog.save()
+    .then(savedBlog => {
+      response.status(201).json(savedBlog)
+    })
+    .catch(error => next(error))
+})
+
+blogsRouter.delete("/:id", (request, response, next) => {
+  Blog.findByIdAndDelete(request.params.id)
+    .then(() => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
+})
+
+blogsRouter.put("/:id", (request, response, next) => {
+  const { title, author, url, likes } = request.body
+
+  const blogUpdate = { title, author, url, likes }
+
+  Blog.findByIdAndUpdate(request.params.id, blogUpdate, { new: true })
+    .then(updatedBlog => {
+      response.json(updatedBlog)
+    })
+    .catch(error => next(error))
 })
 
 module.exports = blogsRouter
