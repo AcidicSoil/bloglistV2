@@ -39,27 +39,30 @@ blogsRouter.post("/", async (request, response) => {
   }
 })
 
-blogsRouter.delete("/:id", async (request, response, next) => {
+blogsRouter.delete("/:id", async (request, response) => {
   try {
     await Blog.findByIdAndDelete(request.params.id)
     response.status(204).end()
   } catch (error) {
-    next(error)
+    response.status(400).json({ error: error.message })
   }
 })
 
-blogsRouter.put("/:id", async (request, response, next) => {
+blogsRouter.put("/:id", async (request, response) => {
   const { title, author, url, likes } = request.body
 
+  const updatedBlog = {
+    title,
+    author,
+    url,
+    likes
+  }
+
   try {
-    const updatedBlog = await Blog.findByIdAndUpdate(
-      request.params.id,
-      { title, author, url, likes },
-      { new: true }
-    )
-    response.json(updatedBlog)
+    const blog = await Blog.findByIdAndUpdate(request.params.id, updatedBlog, { new: true, runValidators: true, context: "query" })
+    response.json(blog)
   } catch (error) {
-    next(error)
+    response.status(400).json({ error: error.message })
   }
 })
 

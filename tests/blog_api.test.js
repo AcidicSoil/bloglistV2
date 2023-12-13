@@ -78,6 +78,59 @@ describe("POST /api/blogs", () => {
   })
 })
 
+describe("DELETE /api/blogs/:id", () => {
+  beforeEach(async () => {
+    await helper.populateBlogs() // Populate the test database
+  })
+
+  test("successfully deletes a blog post", async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(204)
+
+    const blogsAtEnd = await helper.blogsInDb()
+
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1)
+
+    const titles = blogsAtEnd.map(r => r.title)
+    expect(titles).not.toContain(blogToDelete.title)
+  })
+
+  // Additional tests as necessary
+})
+
+describe("PUT /api/blogs/:id", () => {
+  beforeEach(async () => {
+    await helper.populateBlogs() // Populate the test database
+  })
+
+  test("successfully updates the likes of a blog post", async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToUpdate = blogsAtStart[0]
+
+    const updatedBlog = {
+      ...blogToUpdate,
+      likes: blogToUpdate.likes + 1
+    }
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedBlog)
+      .expect(200)
+      .expect("Content-Type", /application\/json/)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    const updated = blogsAtEnd.find(blog => blog.id === blogToUpdate.id)
+
+    expect(updated.likes).toBe(blogToUpdate.likes + 1)
+  })
+
+  // Additional tests as necessary
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
